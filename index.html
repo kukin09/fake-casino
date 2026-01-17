@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카지노 게임</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 시작 화면 -->
+    <div id="startScreen" class="screen">
+        <h1>🎰 카지노 게임 🎰</h1>
+        <div class="menu-buttons">
+            <button id="startPokerBtn" class="main-button">포커</button>
+            <button id="startBlackjackBtn" class="main-button">블랙잭</button>
+            <button id="startSlotBtn" class="main-button slot-btn">슬롯머신</button>
+        </div>
+    </div>
+
+    <!-- 게임 화면 -->
+    <div id="gameScreen" class="screen hidden">
+        <div class="game-container">
+            <!-- AI 영역 -->
+            <div class="player-area ai-area">
+                <div class="player-info">
+                    <h3>AI</h3>
+                    <div class="chips">칩: <span id="aiChips">1000</span></div>
+                </div>
+                <div id="aiCards" class="cards">
+                    <div class="card back"></div>
+                    <div class="card back"></div>
+                </div>
+                <div id="aiAction" class="action-display"></div>
+            </div>
+
+            <!-- 커뮤니티 카드 영역 -->
+            <div class="community-area">
+                <div class="pot-info">팟: <span id="potAmount">0</span></div>
+                <div id="communityCards" class="cards community-cards"></div>
+                <div id="gameMessage" class="game-message"></div>
+            </div>
+
+            <!-- 플레이어 영역 -->
+            <div class="player-area player-area-user">
+                <div class="player-info">
+                    <h3>당신</h3>
+                    <div class="chips">칩: <span id="playerChips">1000</span></div>
+                </div>
+                <div id="playerCards" class="cards"></div>
+                
+                <!-- 베팅 컨트롤 -->
+                <div id="bettingControls" class="betting-controls">
+                    <button id="foldBtn" class="action-button">폴드</button>
+                    <button id="checkBtn" class="action-button">체크</button>
+                    <button id="callBtn" class="action-button">콜</button>
+                    <button id="raiseBtn" class="action-button">레이즈</button>
+                    <div class="raise-controls">
+                        <input type="range" id="raiseSlider" min="0" max="1000" value="50">
+                        <span id="raiseAmount">50</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button id="pokerBackToMenuBtn" class="back-button">메뉴로</button>
+    </div>
+
+    <!-- 블랙잭 승리 조건 선택 화면 -->
+    <div id="bjGoalScreen" class="screen hidden">
+        <h2>🎯 승리 조건을 선택하세요</h2>
+        <div class="goal-buttons">
+            <button class="goal-button bj-goal-btn" data-goal="1500">1,500 칩</button>
+            <button class="goal-button bj-goal-btn" data-goal="2000">2,000 칩</button>
+            <button class="goal-button bj-goal-btn" data-goal="5000">5,000 칩</button>
+            <button class="goal-button bj-goal-btn" data-goal="10000">10,000 칩</button>
+            <button class="goal-button bj-goal-btn unlimited" data-goal="0">무제한 모드</button>
+        </div>
+        <button id="bjGoalBackBtn" class="back-button">뒤로</button>
+    </div>
+
+    <!-- 슬롯머신 승리 조건 선택 화면 -->
+    <div id="slotGoalScreen" class="screen hidden">
+        <h2>💎 승리 조건을 선택하세요</h2>
+        <div class="goal-buttons">
+            <button class="goal-button slot-goal-btn" data-goal="1500">1,500 칩</button>
+            <button class="goal-button slot-goal-btn" data-goal="2000">2,000 칩</button>
+            <button class="goal-button slot-goal-btn" data-goal="5000">5,000 칩</button>
+            <button class="goal-button slot-goal-btn" data-goal="10000">10,000 칩</button>
+            <button class="goal-button slot-goal-btn unlimited" data-goal="0">무제한 모드</button>
+        </div>
+        <button id="slotGoalBackBtn" class="back-button">뒤로</button>
+    </div>
+
+    <!-- 블랙잭 게임 화면 -->
+    <div id="blackjackScreen" class="screen hidden">
+        <div class="game-container">
+            <!-- 딜러 영역 -->
+            <div class="player-area dealer-area">
+                <div class="player-info">
+                    <h3>딜러</h3>
+                    <div class="score-display">점수: <span id="dealerScore">0</span></div>
+                </div>
+                <div id="dealerCards" class="cards"></div>
+            </div>
+
+            <!-- 게임 정보 영역 -->
+            <div class="community-area">
+                <div class="pot-info">칩: <span id="bjPlayerChips">1000</span></div>
+                <div class="pot-info" id="bjGoalDisplay">목표: <span id="bjGoalAmount">-</span></div>
+                <div class="pot-info">베팅: <span id="bjBetAmount">0</span></div>
+                <div id="bjGameMessage" class="game-message"></div>
+            </div>
+
+            <!-- 플레이어 영역 -->
+            <div class="player-area player-area-user">
+                <div class="player-info">
+                    <h3>당신</h3>
+                    <div class="score-display">점수: <span id="playerScore">0</span></div>
+                </div>
+                <div id="bjPlayerCards" class="cards"></div>
+                
+                <!-- 블랙잭 컨트롤 -->
+                <div id="bjControls" class="betting-controls">
+                    <!-- 베팅 단계 -->
+                    <div id="bjBettingPhase" class="bj-betting-phase">
+                        <div class="bet-buttons">
+                            <button class="bet-chip-btn" data-amount="10">10</button>
+                            <button class="bet-chip-btn" data-amount="25">25</button>
+                            <button class="bet-chip-btn" data-amount="50">50</button>
+                            <button class="bet-chip-btn" data-amount="100">100</button>
+                            <button class="bet-chip-btn" data-amount="200">200</button>
+                        </div>
+                        <button id="bjDealBtn" class="action-button" style="background: #2ecc71; font-size: 1.3rem; padding: 15px 40px;">딜!</button>
+                    </div>
+                    
+                    <!-- 게임 단계 -->
+                    <div id="bjGamePhase" class="bj-game-phase hidden">
+                        <button id="bjHitBtn" class="action-button" style="background: #3498db;">히트</button>
+                        <button id="bjStandBtn" class="action-button" style="background: #e74c3c;">스탠드</button>
+                        <button id="bjDoubleBtn" class="action-button" style="background: #f39c12;">더블 다운</button>
+                    </div>
+                    
+                    <!-- 결과 단계 -->
+                    <div id="bjResultPhase" class="bj-result-phase hidden">
+                        <button id="bjNewRoundBtn" class="action-button" style="background: #2ecc71; font-size: 1.3rem; padding: 15px 40px;">다음 판</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button id="bjBackToMenuBtn" class="back-button">메뉴로</button>
+    </div>
+
+    <!-- 슬롯머신 게임 화면 -->
+    <div id="slotScreen" class="screen hidden">
+        <div class="slot-container">
+            <h2 class="slot-title">💎 다이아몬드 슬롯 💎</h2>
+            
+            <!-- 게임 정보 -->
+            <div class="slot-info">
+                <div class="slot-info-item">칩: <span id="slotChips">1000</span></div>
+                <div class="slot-info-item goal-info" id="slotGoalDisplay">목표: <span id="slotGoalAmount">-</span></div>
+                <div class="slot-info-item">베팅: <span id="slotBetAmount">10</span></div>
+            </div>
+
+            <!-- 슬롯 머신 -->
+            <div class="slot-machine">
+                <div class="slot-reels">
+                    <div class="slot-reel" id="reel1">
+                        <div class="symbol">💎</div>
+                    </div>
+                    <div class="slot-reel" id="reel2">
+                        <div class="symbol">💎</div>
+                    </div>
+                    <div class="slot-reel" id="reel3">
+                        <div class="symbol">💎</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 메시지 -->
+            <div id="slotMessage" class="slot-message"></div>
+
+            <!-- 컨트롤 -->
+            <div class="slot-controls">
+                <div class="bet-selection">
+                    <button class="bet-btn" data-bet="10">10</button>
+                    <button class="bet-btn active" data-bet="20">20</button>
+                    <button class="bet-btn" data-bet="50">50</button>
+                    <button class="bet-btn" data-bet="100">100</button>
+                </div>
+                <button id="spinBtn" class="spin-button">스핀!</button>
+            </div>
+
+            <!-- 배당표 -->
+            <div class="paytable">
+                <h3>💰 배당표</h3>
+                <div class="paytable-grid">
+                    <div class="paytable-item">💎 × 3 = 50배</div>
+                    <div class="paytable-item">💎💎💎 × 3 = 30배</div>
+                    <div class="paytable-item">💎💎 × 3 = 20배</div>
+                    <div class="paytable-item">7️⃣ × 3 = 25배</div>
+                    <div class="paytable-item">🪙 × 3 = 15배</div>
+                    <div class="paytable-item">🍒 × 3 = 10배</div>
+                    <div class="paytable-item">🍍 × 3 = 5배</div>
+                </div>
+            </div>
+        </div>
+        <button id="slotBackToMenuBtn" class="back-button">메뉴로</button>
+    </div>
+
+    <!-- 결과 화면 -->
+    <div id="resultScreen" class="screen hidden">
+        <div class="result-container">
+            <h2 id="resultTitle"></h2>
+            <p id="resultMessage"></p>
+            <button id="backToMenuBtn" class="main-button">처음으로</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+    <script src="blackjack.js"></script>
+    <script src="slot.js"></script>
+</body>
+</html>
+
